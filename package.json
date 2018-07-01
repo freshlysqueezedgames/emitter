@@ -1,8 +1,8 @@
 {
   "name": "@freshlysqueezedgames/emitter",
-  "version": "0.0.5",
+  "version": "0.0.9",
   "description": "independant state management pipeline",
-  "main": "publish/emitter.min.js",
+  "main": "index.js",
   "scripts": {
     "distribute": "babel src --out-file publish/emitter.js --ignore *.test.js && npm run minify",
     "minify": "minify publish/emitter.js --out-file publish/emitter.min.js",
