@@ -1,4 +1,4 @@
-import Emitter from '@/core/Emitter'
+import Emitter from './Emitter'
 
 const {hasOwnProperty} = Object.prototype
 
