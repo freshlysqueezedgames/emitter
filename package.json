@@ -1,18 +1,20 @@
 {
   "name": "@freshlysqueezedgames/emitter",
-  "version": "0.0.10",
-  "description": "independant state management pipeline",
+  "version": "1.0.1",
+  "description": "Really simple base classes for creating an application in vanilla JavaScript",
   "main": "dist/index.js",
   "scripts": {
     "distribute": "babel src --out-file publish/emitter.js --ignore *.test.js && npm run minify",
     "minify": "minify publish/emitter.js --out-file publish/emitter.min.js",
     "build": "babel src --out-dir dist --source-maps",
-    "lint": "",
-    "test": "npm run build && jest dist"
+    "test": "npm run build && jest dist --coverage"
   },
   "keywords": [
-    "Flux",
-    "State"
+    "Emitter",
+    "Events",
+    "Subscribe",
+    "Global Messaging",
+    "Messenger"
   ],
   "author": "Carl Pryke (Freshly Squeezed Games LTD)",
   "license": "MIT",
@@ -28,6 +30,9 @@
     "babel-preset-flow": "^6.23.0",
     "babel-preset-minify": "^0.4.3",
     "eslint": "^5.0.1",
-    "path-to-regexp": "^2.1.0"
+    "jest": "^23.4.2"
+  },
+  "jest" : {
+    "testEnvironment" : "node"
   }
 }

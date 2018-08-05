@@ -6,12 +6,13 @@ let instance : Emitter = null
 
 /**
  * @class Message
- * @description Controls communication between all controller classes and is a central focus point
- * for any event trafficing in the application.
+ * @description Controls communication between all emitter classes. Provides a central global access point for listening 
+ * to classes throughout your application
+ * @extends Emitter
  */
-class Message extends Emitter {
+export default class Message extends Emitter {
   static EVENTS : Object = {
-    GARBAGE_COLLECT: 'message.garbagecollect'
+    GARBAGE_COLLECT: 'message.garbagecollect' // We listen for this event should an object be up for the GC, you need to notify the message instance to remove implicit references
   }
 
   /**
@@ -27,15 +28,12 @@ class Message extends Emitter {
     const t : Message = this
 
     if (instance) {
-      console.error('Only one message instance can be used at any one time')
-      return
+      throw new Error('Only one message instance can be used at any one time, please use Message.Instance')
     }
 
     t.listeners = {}
 
-    t.On(Message.EVENTS.GARBAGE_COLLECT, (event : Event) => {
-      t.Remove(event)
-    })
+    t.On(Message.EVENTS.GARBAGE_COLLECT, (event : Event) => t.Remove(event))
 
     instance = t
   }
@@ -44,7 +42,7 @@ class Message extends Emitter {
    * @name Instance
    * @description Returns the instance of the object or a new one if one doesn't exist. Should always be instantiated like this 
    * if possible to avoid duplication errors
-   * @param {Object} props:                          The instance properties, if an instance exists will not be used
+   * @param {Object} props: The instance properties, if an instance exists will not be used
    * @return {Message} The single instance
    * @static
    */
@@ -55,43 +53,17 @@ class Message extends Emitter {
   /**
    * @name Watch
    * @description Listens for events on the target object given.
-   * @param {string} name:                           The name of the event to listen for globally
-   * @param {Emitter} target:                        The target object to watch for events from
+   * @param {string} name: The name of the event to listen for globally
+   * @param {Emitter} target: The target object to watch for events from
+   * @param {string} identifier: Optional, an identifier for the listener so it can easily be removed
    * @return {Message} itself for chaining
    * @public
    */
-  Watch (name : string, target : Emitter) : Message {
+  Watch (name : string, target : Emitter, identifier? : string) : Message {
     const t : Message = this
 
-    target.On(name, (event : Event) => {
-      t.Emit(name, event)
-    })
-
-    return t
-  }
-
-  /**
-   * @name Remove
-   * @description Removes all listeners, or that given by the type
-   * @param {string} name:                 The name of the event to remove. (evaluates to t.Off(name))
-   * @return {Message} itself for chaining
-   * @public
-   */
-  Remove (name : string) : Message {
-    const t : Message = this
-
-    if (name) {
-      return t.Off(name)
-    }
-
-    for (let key : string in t) {
-      if (hasOwnProperty.call(t, key) && key.match(/^event\./)) {
-        t.Off(key)
-      }
-    }
+    target.On(name, (event : Event) => t.Emit(name, event), identifier)
 
     return t
   }
 }
-
-export default Message
