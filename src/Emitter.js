@@ -1,11 +1,13 @@
 const {hasOwnProperty} = Object.prototype
 
+const EVENTS_REGEX : RegExp = /^event\./
+
 /**
  * @class Emitter
  * @description Base Class for setting up event traffic and binding custom properties to the 
  * instance
  */
-class Emitter {
+export default class Emitter {
   static eventPrefix : string = 'event.'
 
   constructor (props? : Object) {
@@ -29,17 +31,23 @@ class Emitter {
 
     for (let key in props) {
       if (hasOwnProperty.call(props, key) && props[key] !== undefined) {
+        const value : any = props[key]
+
         switch (typeof t[key]) {
           case ('number'): {
-            t[key] = isNaN(+param) ? 0 : +param
+            t[key] = isNaN(+value) ? 0 : +value
             break
           }
           case ('boolean'): {
-            t[key] = !!(props[key] === 'true' || props[key] === '1')
+            t[key] = !!(value === 'true' || value === '1')
             break
           }
+          case ('string') : {
+            t[key] = value.toString()
+            break;
+          }
           default: {
-            t[key] = props[key]
+            t[key] = value
             break
           }
         }   
@@ -52,8 +60,8 @@ class Emitter {
   /**
    * @name Emit
    * @description Dispatches a payload of data to all the callbacks registered to an event
-   * @param {string} name:                 The name of the event
-   * @param {Object} payload:              The data to pass to all callbacks
+   * @param {string} name: The name of the event
+   * @param {Object} payload: The data to pass to all callbacks
    * @return {Emitter} the instance
    * @public
    */
@@ -67,8 +75,6 @@ class Emitter {
 
     let i : number = -1
     let l : number = callbacks.length
-
-    console.log('callbacks!', callbacks)
 
     while (++i < l) {
       const callback : Function = callbacks[i]
@@ -106,15 +112,19 @@ class Emitter {
   /**
    * @name On
    * @description Binds a callback to the instance if the event exists
-   * @param {string} name:                The name of event that you want to listen to
-   * @param {Function} callback:        The callback to trigger when the event happens
-   * @param {string | number | boolean} data:           A boolean of true means one trigger only. A number dictates ythe
-   * number of triggers. string attaches an identifier with which to remove the function later. 
+   * @param {string} name: The name of event that you want to listen to
+   * @param {Function} callback: The callback to trigger when the event happens, return true from the function to remove from callback list
+   * @param {string | number | boolean} data: A boolean of true means one trigger only. A number dictates the
+   * number of triggers before removal. string attaches an identifier with which to remove the function later. 
    * @return {Emitter} the instance to chain calls
    * @public
    */
-  On (name : string, callback : Fn, data : string | number | boolean) : Emitter {
+  On (name : string, callback : Fn, data? : string | number | boolean) : Emitter {
     const t : Emitter = this
+
+    if (!name) {
+      throw new Error('no event name provided to listen for!')
+    }
 
     if (!callback) {
       return t
@@ -136,8 +146,8 @@ class Emitter {
   /**
    * @name Off
    * @description Will remove specified event listeners
-   * @param {string} name:                        The name of the event to turn off
-   * @param {Function | string} listener:         The listener to remove itself or the string identifier
+   * @param {string} name:  The name of the event to turn off
+   * @param {Function | string} listener: The listener to remove itself or the string identifier
    * @return {Emitter} the instance for chaining calls
    * @public
    */
@@ -147,6 +157,12 @@ class Emitter {
     name = Emitter.eventPrefix + name
 
     if (!t[name]) {
+      for (let key in t) {
+        if(hasOwnProperty.call(t, key) && key.match(EVENTS_REGEX)) {
+          delete t[key]
+        }
+      }
+
       return t
     }
 
@@ -161,17 +177,16 @@ class Emitter {
     while (i--) {
       const callback : Function = callbacks[i]
 
-      switch (typeof identifer) {
+      switch (typeof listener) {
         case ('string'): {
-          if (callback.data === identifier) {
+          if (callback.data === listener) {
             callbacks.splice(i, 1)
           }
 
           break
         }
-
         default: {
-          if (callback === identifier) {
+          if (callback === listener) {
             callbacks.splice(i, 1)
           }
 
@@ -183,5 +198,3 @@ class Emitter {
     return t
   }
 }
-
-export default Emitter
