@@ -1,6 +1,6 @@
 {
   "name": "@freshlysqueezedgames/emitter",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Really simple base classes for creating an application in vanilla JavaScript",
   "main": "dist/index.js",
   "scripts": {
@@ -18,6 +18,10 @@
   ],
   "author": "Carl Pryke (Freshly Squeezed Games LTD)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/freshlysqueezedgames/hermes"
+  },
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-plugin-transform-class-properties": "^6.24.1",
