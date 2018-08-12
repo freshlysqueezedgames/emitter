@@ -20,7 +20,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/freshlysqueezedgames/hermes"
+    "url": "https://github.com/freshlysqueezedgames/emitter"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
